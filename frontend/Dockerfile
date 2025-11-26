@@ -5,42 +5,56 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY tsconfig.json ./
 
-# Install dependencies
-RUN npm ci
+# Install ALL dependencies (including devDependencies for build)
+RUN npm install
 
 # Copy source code
-COPY . .
+COPY src ./src
 
-# Build argument for API URL
-ARG VITE_API_URL
-ENV VITE_API_URL=${VITE_API_URL:-http://localhost:3000}
+# Copy frontend source for building
+COPY frontend ./frontend
 
-# Build the application
+# Build TypeScript code
 RUN npm run build
 
-# Production stage with nginx
-FROM nginx:alpine
+# Build frontend
+RUN cd frontend && npm install && npm run build
 
-# Copy built files to nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Production stage
+FROM node:20-alpine
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Add health check
-RUN echo "healthy" > /usr/share/nginx/html/health
+# Copy package files
+COPY package*.json ./
 
-# Create nginx user
-RUN addgroup -g 101 -S nginx && \
-    adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
+# Install only production dependencies
+RUN npm install --omit=dev
 
-# Expose port 80
-EXPOSE 80
+# Copy built code from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Copy built frontend from builder stage
+COPY --from=builder /app/frontend/dist ./frontend/dist
+
+# Create necessary directories with proper permissions
+RUN mkdir -p logs data && \
+    chown -R node:node /app
+
+# Switch to non-root user
+USER node
+
+# Expose port
+EXPOSE 3000
+
+# Set environment to production
+ENV NODE_ENV=production
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost/health || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); })"
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start the application
+CMD ["node", "dist/server.js"]
