@@ -42,7 +42,7 @@ export const IconGenerator = () => {
         setProgress({ current: i, total: 4 });
         
         // Create prompt for SINGLE item icon with STRICT requirements
-        const iconPrompt = `ONE single ${prompt} icon only ${styleEnhancement}${colorEnhancement}, ONLY ONE object, simple flat icon, isolated on transparent background, NO multiple items, NO collections, just one single item, vector style, clean, minimalist, professional icon design, transparent PNG, centered, no shadows, no background, THERE SHOULD BE ONLY ONE ICON IN THE IMAGE.`;
+        const iconPrompt = `ONE single ${prompt} icon only ${styleEnhancement}${colorEnhancement}, ONLY ONE object, simple flat icon, isolated on transparent background, NO multiple items, NO collections, just one single item, vector style, clean, minimalist, professional icon design, transparent PNG, centered, no shadows, no background, THERE SHOULD BE ONLY ONE ICON IN THE IMAGE THAT YOU GENERATED. NOT MULTIPLE OR EVEN ICON PACK`;
         
         try {
           const result = await generateImage({
