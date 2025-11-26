@@ -1,28 +1,4 @@
-# Build stage
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-COPY tsconfig.json ./
-
-# Install ALL dependencies (including devDependencies for build)
-RUN npm install
-
-# Copy source code
-COPY src ./src
-
-# Copy frontend source for building
-COPY frontend ./frontend
-
-# Build TypeScript code
-RUN npm run build
-
-# Build frontend
-RUN cd frontend && npm install && npm run build
-
-# Production stage
+# Development stage
 FROM node:20-alpine
 
 WORKDIR /app
@@ -30,31 +6,22 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install only production dependencies
-RUN npm install --omit=dev
+# Install dependencies
+RUN npm install
 
-# Copy built code from builder stage
-COPY --from=builder /app/dist ./dist
+# Copy source code
+COPY . .
 
-# Copy built frontend from builder stage
-COPY --from=builder /app/frontend/dist ./frontend/dist
+# Build argument for API URL
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL:-http://localhost:3000}
 
-# Create necessary directories with proper permissions
-RUN mkdir -p logs data && \
-    chown -R node:node /app
+# Expose Vite dev server port
+EXPOSE 5173
 
-# Switch to non-root user
-USER node
+# Health check for Vite dev server
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost:5173 || exit 1
 
-# Expose port
-EXPOSE 3000
-
-# Set environment to production
-ENV NODE_ENV=production
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); })"
-
-# Start the application
-CMD ["node", "dist/server.js"]
+# Start Vite dev server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
