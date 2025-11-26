@@ -4,6 +4,7 @@
   "description": "Image Generation API using Replicate FLUX Schnell with TypeScript and Express",
   "main": "dist/server.js",
   "scripts": {
+    "start-client": "cd frontend && npm run dev",
     "dev": "nodemon --exec ts-node src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
