@@ -9,6 +9,7 @@ README.md
 .vscode
 .idea
 dist
+coverage
 *.log
 logs/*
 !logs/.gitkeep
@@ -19,6 +20,7 @@ Thumbs.db
 *.md
 !README.md
 .github
+frontend
 test-replicate.ts
 test-request.json
 docker-compose*.yml

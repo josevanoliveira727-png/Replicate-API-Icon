@@ -10,17 +10,12 @@ COPY tsconfig.json ./
 # Install ALL dependencies (including devDependencies for build)
 RUN npm install
 
+
 # Copy source code
 COPY src ./src
 
-# Copy frontend source for building
-COPY frontend ./frontend
-
 # Build TypeScript code
 RUN npm run build
-
-# Build frontend
-RUN cd frontend && npm install && npm run build
 
 # Production stage
 FROM node:20-alpine
@@ -33,11 +28,9 @@ COPY package*.json ./
 # Install only production dependencies
 RUN npm install --omit=dev
 
+
 # Copy built code from builder stage
 COPY --from=builder /app/dist ./dist
-
-# Copy built frontend from builder stage
-COPY --from=builder /app/frontend/dist ./frontend/dist
 
 # Create necessary directories with proper permissions
 RUN mkdir -p logs data && \

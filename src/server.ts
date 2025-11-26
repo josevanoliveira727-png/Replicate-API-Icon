@@ -67,20 +67,6 @@ app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Serve static frontend files in production
-if (process.env.NODE_ENV === 'production') {
-    const frontendPath = path.join(__dirname, '../frontend/dist');
-    if (fs.existsSync(frontendPath)) {
-        app.use(express.static(frontendPath));
-        // Handle SPA routing - serve index.html for all non-API routes
-        app.get('*', (req, res, next) => {
-            if (req.path.startsWith('/api')) {
-                return next();
-            }
-            res.sendFile(path.join(frontendPath, 'index.html'));
-        });
-    }
-}
 
 // Routes
 app.use('/api', routes);
