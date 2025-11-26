@@ -56,7 +56,7 @@
 .form-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(205, 34, 36, 0.1);
 }
 
 .form-input:disabled {
@@ -103,7 +103,7 @@
 
 .style-card.selected {
   border-color: var(--primary-color);
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(205, 34, 36, 0.1);
 }
 
 .style-name {
@@ -184,7 +184,7 @@
 .color-text-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(205, 34, 36, 0.1);
 }
 
 .color-text-input:invalid {
@@ -237,7 +237,7 @@
 .btn-add-color:hover:not(:disabled) {
   border-color: var(--primary-color);
   color: var(--primary-color);
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(205, 34, 36, 0.05);
 }
 
 .btn-add-color:disabled {
