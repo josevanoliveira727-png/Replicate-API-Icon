@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { ApiResponse, ImageGenerationResponse } from '../types';
+import {configDotenv} from "dotenv";
+
+configDotenv()
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: `${process.env.VITE_API_URL}/api`,
   timeout: 120000, // 2 minutes for image generation
   headers: {
     'Content-Type': 'application/json',
